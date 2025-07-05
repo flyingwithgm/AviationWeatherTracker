@@ -12,7 +12,7 @@ async function getWeather() {
   try {
     const response = await fetch(`https://avwx.rest/api/metar/${icao}?options=summary&format=json`, {
       headers: {
-        Authorization: "YOUR_API_KEY_HERE" // Replace with your real key
+     Authorization: "5zrr7y-qcaVVlKbBeOjJgNLhVQIeYxW63xymdcsXFnQ"    // Replace with your real key
       }
     });
 
