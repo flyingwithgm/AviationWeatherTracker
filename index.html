@@ -3,55 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aviation Weather Tracker</title>
+    <title>GM73 - Aviation Weather Tracker</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Exo+2:wght@300;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-plane-departure"></i> Aviation Weather Tracker</h1>
-            <p>Get real-time METAR data for any airport worldwide</p>
-        </header>
-        
-        <div class="search-box">
-            <input type="text" id="icao-input" placeholder="Enter ICAO code (e.g. KJFK, EGLL)" maxlength="4">
-            <button id="get-weather">Get Weather <i class="fas fa-cloud-sun"></i></button>
-        </div>
-        
-        <div id="weather-result" class="hidden">
-            <div class="weather-card">
-                <div class="weather-header">
-                    <h2 id="airport-name">-</h2>
-                    <span id="metar-string" class="metar-code">-</span>
-                </div>
-                <div class="weather-details">
-                    <div class="detail">
-                        <i class="fas fa-temperature-high"></i>
-                        <span id="temperature">-</span>
-                    </div>
-                    <div class="detail">
-                        <i class="fas fa-wind"></i>
-                        <span id="wind">-</span>
-                    </div>
-                    <div class="detail">
-                        <i class="fas fa-eye"></i>
-                        <span id="visibility">-</span>
-                    </div>
-                    <div class="detail">
-                        <i class="fas fa-cloud"></i>
-                        <span id="conditions">-</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <footer>
-            <p>Data provided by Aviation Weather API</p>
-        </footer>
-    </div>
+    <nav class="navbar">
+        <div class="logo">GM73</div>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Aviation</a></li>
+            <li><a href="#">Weather</a></li>
+        </ul>
+    </nav>
 
-    <script src="weather.js"></script>
+    <main class="container">
+        <h1>Aviation Weather Tracker</h1>
+        <p class="description">Get real-time METAR data for any airport worldwide</p>
+        
+        <div class="input-group">
+            <input type="text" id="icaoInput" placeholder="Enter ICAO code (e.g., KJFK, EGLL)" maxlength="4">
+            <button id="fetchWeather">Get Weather <i class="fas fa-cloud-sun"></i></button>
+        </div>
+
+        <div id="weatherResult" class="weather-card hidden">
+            <div id="weatherContent"></div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
 </body>
 </html>
