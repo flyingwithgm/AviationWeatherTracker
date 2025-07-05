@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather | GM73</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo-container">
+        <img src="images/gm73-logo.png" alt="GM73 Logo" class="logo" />
+        <span class="brand-name">GM73</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="aviation.html">Aviation</a></li>
+        <li><a href="weather.html" class="active">Weather</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="weather-section">
+    <div class="weather-container">
+      <h1>Aviation Weather Tracker</h1>
+      <p>Enter ICAO code (e.g., KJFK, EGLL)</p>
+      <input type="text" id="icaoInput" placeholder="Enter ICAO code..." />
+      <button onclick="getWeather()">Get Weather</button>
+
+      <div id="weatherResult" class="weather-result"></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 George Nuyekpe | GM73</p>
+  </footer>
+
+  <script src="weather.js"></script>
+</body>
+</html>
