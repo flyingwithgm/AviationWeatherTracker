@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const conditions = document.getElementById('conditions');
 
     // API key and base URL
-    const apiKey = '5zrr7y-qcaVVlKbBeOjJgNLhVQIeYxW63xymdcsXFnQ';
+    const apiKey = 'LW8efytv434DQwRj4mN0ulbMYAEAInxSnGEf-7rXdc0';
     const baseUrl = 'https://avwx.rest/api/metar/';
 
     getWeatherBtn.addEventListener('click', fetchWeather);
