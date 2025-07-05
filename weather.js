@@ -1,39 +1,141 @@
-async function getWeather() {
-  const icao = document.getElementById('icaoInput').value.toUpperCase().trim();
-  const resultDiv = document.getElementById('weatherResult');
+document.addEventListener('DOMContentLoaded', function() {
+    const getWeatherBtn = document.getElementById('get-weather');
+    const icaoInput = document.getElementById('icao-input');
+    const weatherResult = document.getElementById('weather-result');
+    const airportName = document.getElementById('airport-name');
+    const metarString = document.getElementById('metar-string');
+    const temperature = document.getElementById('temperature');
+    const wind = document.getElementById('wind');
+    const visibility = document.getElementById('visibility');
+    const conditions = document.getElementById('conditions');
 
-  if (!icao || icao.length !== 4) {
-    resultDiv.innerHTML = "<p>Please enter a valid 4-letter ICAO code (e.g., KJFK, DGAA).</p>";
-    return;
-  }
+    // API key and base URL
+    const apiKey = '5zrr7y-qcaVVlKbBeOjJgNLhVQIeYxW63xymdcsXFnQ';
+    const baseUrl = 'https://avwx.rest/api/metar/';
 
-  resultDiv.innerHTML = "<p>Loading weather data...</p>";
+    getWeatherBtn.addEventListener('click', fetchWeather);
 
-  try {
-    const response = await fetch(`https://avwx.rest/api/metar/${icao}?options=summary&format=json`, {
-      headers: {
-     Authorization: "5zrr7y-qcaVVlKbBeOjJgNLhVQIeYxW63xymdcsXFnQ"    // Replace with your real key
-      }
+    icaoInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            fetchWeather();
+        }
     });
 
-    if (!response.ok) {
-      throw new Error("Weather data not available for this ICAO code.");
+    function fetchWeather() {
+        const icaoCode = icaoInput.value.trim().toUpperCase();
+        
+        if (!icaoCode) {
+            alert('Please enter an ICAO airport code (e.g. KJFK, EGLL)');
+            return;
+        }
+
+        // Show loading state
+        weatherResult.classList.remove('hidden');
+        airportName.textContent = 'Loading...';
+        metarString.textContent = 'Fetching METAR data...';
+        temperature.textContent = '-';
+        wind.textContent = '-';
+        visibility.textContent = '-';
+        conditions.textContent = '-';
+
+        fetch(`${baseUrl}${icaoCode}?format=json&options=info`, {
+            headers: {
+                'Authorization': `Bearer ${apiKey}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            displayWeather(data);
+        })
+        .catch(error => {
+            console.error('Error fetching weather data:', error);
+            airportName.textContent = 'Error';
+            metarString.textContent = 'Could not fetch weather data';
+            temperature.textContent = '-';
+            wind.textContent = '-';
+            visibility.textContent = '-';
+            conditions.textContent = '-';
+        });
     }
 
-    const data = await response.json();
-
-    resultDiv.innerHTML = `
-      <div class="weather-card">
-        <h2>${data.station} (${icao})</h2>
-        <p><strong>Flight Rules:</strong> ${data.flight_rules}</p>
-        <p><strong>Temperature:</strong> ${data.temperature.value}°C</p>
-        <p><strong>Wind:</strong> ${data.wind_direction.repr}° at ${data.wind_speed.repr} knots</p>
-        <p><strong>Visibility:</strong> ${data.visibility.repr} meters</p>
-        <p><strong>Clouds:</strong> ${data.clouds.length > 0 ? data.clouds.map(cloud => cloud.repr).join(', ') : 'Clear'}</p>
-        <p><strong>Raw METAR:</strong> ${data.raw}</p>
-      </div>
-    `;
-  } catch (error) {
-    resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
-  }
-}
+    function displayWeather(data) {
+        // Set airport name
+        airportName.textContent = data.station ? `${data.station.name} (${data.station.icao})` : data.icao;
+        
+        // Set raw METAR string
+        metarString.textContent = data.raw;
+        
+        // Set temperature
+        if (data.temperature && data.temperature.value) {
+            const tempC = data.temperature.value;
+            const tempF = Math.round((tempC * 9/5) + 32);
+            temperature.textContent = `${tempC}°C / ${tempF}°F`;
+        } else {
+            temperature.textContent = 'N/A';
+        }
+        
+        // Set wind information
+        if (data.wind_direction && data.wind_speed) {
+            const windDir = data.wind_direction.value || 'VRB';
+            const windSpeed = data.wind_speed.value;
+            const windUnit = data.units.wind_speed;
+            let windGust = '';
+            
+            if (data.wind_gust) {
+                windGust = ` gusting to ${data.wind_gust.value} ${windUnit}`;
+            }
+            
+            wind.textContent = `${windDir}° at ${windSpeed} ${windUnit}${windGust}`;
+        } else {
+            wind.textContent = 'N/A';
+        }
+        
+        // Set visibility
+        if (data.visibility) {
+            const visValue = data.visibility.value;
+            const visUnit = data.units.visibility;
+            visibility.textContent = `${visValue} ${visUnit}`;
+        } else {
+            visibility.textContent = 'N/A';
+        }
+        
+        // Set weather conditions
+        if (data.flight_rules) {
+            let conditionText = '';
+            const rules = data.flight_rules;
+            
+            // Map flight rules to weather conditions
+            if (rules === 'VFR') conditionText = 'Visual Flight Rules (VFR)';
+            else if (rules === 'MVFR') conditionText = 'Marginal VFR';
+            else if (rules === 'IFR') conditionText = 'Instrument Flight Rules (IFR)';
+            else if (rules === 'LIFR') conditionText = 'Low IFR';
+            
+            // Add weather phenomena if available
+            if (data.wx_codes && data.wx_codes.length > 0) {
+                const phenomena = data.wx_codes.map(wx => wx.value).join(', ');
+                conditionText += ` - ${phenomena}`;
+            }
+            
+            conditions.textContent = conditionText;
+            
+            // Add appropriate weather icon
+            const weatherIcon = conditions.querySelector('i');
+            if (rules === 'VFR') {
+                weatherIcon.className = 'fas fa-sun';
+            } else if (rules === 'MVFR') {
+                weatherIcon.className = 'fas fa-cloud-sun';
+            } else if (rules === 'IFR') {
+                weatherIcon.className = 'fas fa-cloud';
+            } else if (rules === 'LIFR') {
+                weatherIcon.className = 'fas fa-cloud-rain';
+            }
+        } else {
+            conditions.textContent = 'N/A';
+        }
+    }
+});
